@@ -1,0 +1,8 @@
+/node_modules
+/coverage
+
+index.js
+index.d.ts
+
+.DS_Store
+npm-debug.log*

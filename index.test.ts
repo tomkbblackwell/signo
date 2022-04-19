@@ -11,19 +11,19 @@ test("Sync Callback", () => {
 
     // Test signal.send without callback
     signal.on(callback);
-    signal.send();
+    signal.sendSync();
     expect(called).toBe(true);
 
     // Test signal.send with sync callback
     called = false;
-    signal.send(undefined, () => {
+    signal.sendSync(undefined, () => {
         called = true;
     });
     expect(called).toBe(true);
 
     // Test signal.send with async callback
     called = false;
-    signal.send(undefined, async () => {
+    signal.sendSync(undefined, async () => {
         called = true;
     });
     expect(called).toBe(true);
@@ -31,7 +31,7 @@ test("Sync Callback", () => {
     // Test signal.off
     called = false;
     signal.off(callback);
-    signal.send();
+    signal.sendSync();
     expect(called).toBe(false);
 });
 
@@ -46,13 +46,13 @@ test("async Callback", async () => {
 
     // Test signal.await
     signal.on(callback);
-    await signal.await();
+    await signal.sendAsync();
     expect(called).toBe(true);
 
     // Test signal.off
     called = false;
     signal.off(callback);
-    await signal.await();
+    await signal.sendAsync();
     expect(called).toBe(false);
 });
 
@@ -69,7 +69,7 @@ test("sync signal w/ Value", done => {
         // Do nothing
     });
 
-    signal.send(42, () => {
+    signal.sendSync(42, () => {
         expect(result).toBe(42);
         done();
     });
@@ -84,7 +84,7 @@ test("async signal w/ Value", async () => {
         result = value;
     });
 
-    await signal.await(42);
+    await signal.sendAsync(42);
 
     expect(result).toBe(42);
 });
@@ -108,18 +108,18 @@ test("sync signal w/ result", done => {
 
 
     // Test signal.send with sync callback
-    signal.send(undefined, result => {
+    signal.sendSync(undefined, result => {
         expect(result).toBe(42);
     });
 
     // Test signal.send with async callback
-    signal.send(undefined, async result => {
+    signal.sendSync(undefined, async result => {
         expect(result).toBe(42);
     });
 
     signal.off(callback);
 
-    signal.send(undefined, result => {
+    signal.sendSync(undefined, result => {
         expect(result).toBe(13);
         done();
     });
@@ -142,13 +142,13 @@ test("async signal w/ result", async () => {
         return 13;
     });
 
-    let result = await signal.await();
+    let result = await signal.sendAsync();
 
     expect(result).toBe(42);
 
     signal.off(callback);
 
-    result = await signal.await();
+    result = await signal.sendAsync();
 
     expect(result).toBe(13);
 });
@@ -168,11 +168,11 @@ test("sync corner cases", done => {
         return 13;
     });
 
-    signal.send(32, result => {
+    signal.sendSync(32, result => {
         expect(result).toBe(42);
     });
 
-    signal.await(15).then(result => {
+    signal.sendAsync(15).then(result => {
         expect(result).toBe(25);
         done();
     }).catch(console.error);
@@ -195,7 +195,7 @@ test("async corner cases", async () => {
         return 13;
     });
 
-    const result = await signal.await(32);
+    const result = await signal.sendAsync(32);
     expect(result).toBe(42);
 });
 
@@ -213,8 +213,8 @@ test("error handling", () => {
 
     // Test signal.send without callback
     signal.on(callback);
-    signal.await();
-    signal.send(undefined, () => {
+    signal.sendAsync();
+    signal.sendSync(undefined, () => {
         expect(called).toBe(false);
     });
 });

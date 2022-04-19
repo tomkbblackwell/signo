@@ -2,6 +2,8 @@
 
 Simple Typed Signals.
 
+[![NPM](https://nodei.co/npm/signo.png)](https://npmjs.org/package/signo)
+
 Designed as a simple way to communicate between functional code and a user interface.
 
 Provides two classes:

@@ -70,12 +70,12 @@ export class Signal<ValueType = void> {
     }
 }
 
-export type SignalWithResultCallback<ResultType, ValueType = void> = (signal: ValueType) => ResultType | undefined | Promise<ResultType | undefined>;
+export type SignalWithResultCallback<ResultType extends {}, ValueType = void> = (signal: ValueType) => ResultType | undefined | Promise<ResultType | undefined>;
 
 /**
  * A signal for communicating events and state between seperate parts of an application. Has a result. Can optionally have a value.
  */
-export class SignalWithResult<ResultType, ValueType = void> {
+export class SignalWithResult<ResultType extends {}, ValueType = void> {
     private callbacks: SignalWithResultCallback<ResultType, ValueType>[] = [];
 
     /** Define a new signalWithValue. */

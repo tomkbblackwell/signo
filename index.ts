@@ -13,7 +13,7 @@ export class Signal<ValueType = void> {
 
     /**
      * Send a signal, and optionally wait for it's completion via a callback.
-     * @param value Value to send with the signal. If the signal is valueless, this should be undefined.
+     * @param value Value to send with the signal. If the signal is valueless, this should be void.
      * @param callback Optional callback that will be triggered after all subscriptions (sync and async) have been executed.
      */
     public sendSync(value: ValueType, callback?: (() => void) | undefined): void {
@@ -70,13 +70,13 @@ export class Signal<ValueType = void> {
     }
 }
 
-export type SignalWithResultCallback<ValueType = void, ResultType = void> = (signal: ValueType) => ResultType | undefined | Promise<ResultType | undefined>;
+export type SignalWithResultCallback<ResultType extends {}, ValueType = void> = (signal: ValueType) => ResultType | undefined | Promise<ResultType | undefined>;
 
 /**
  * A signal for communicating events and state between seperate parts of an application. Has a result. Can optionally have a value.
  */
-export class SignalWithResult<ValueType = void, ResultType = void> {
-    private callbacks: SignalWithResultCallback<ValueType, ResultType>[] = [];
+export class SignalWithResult<ResultType extends {}, ValueType = void> {
+    private callbacks: SignalWithResultCallback<ResultType, ValueType>[] = [];
 
     /** Define a new signalWithValue. */
     public constructor() {
@@ -85,7 +85,7 @@ export class SignalWithResult<ValueType = void, ResultType = void> {
 
     /**
      * Send a signal, and optionally wait for it's completion and result via a callback.
-     * @param value Value to send with the signal. If the signal is valueless, this should be undefined.
+     * @param value Value to send with the signal. If the signal is valueless, this should be void.
      * @param callback Optional callback that will be triggered after all subscriptions (sync and async) have been executed. The first argument is the signal's result.
      */
     public sendSync(value: ValueType, callback?: ((value: ResultType | undefined) => void) | undefined): void {
@@ -135,7 +135,7 @@ export class SignalWithResult<ValueType = void, ResultType = void> {
      * The first callback to return a non-undefined value will determine the signal's result.
      * @param callback Callback function, with the signal's value as the first parameter.
      */
-    public on(callback: SignalWithResultCallback<ValueType, ResultType>): void {
+    public on(callback: SignalWithResultCallback<ResultType, ValueType>): void {
         this.callbacks.push(callback);
     }
     
@@ -143,7 +143,7 @@ export class SignalWithResult<ValueType = void, ResultType = void> {
      * Unsubscribe from a signal.
      * @param callback Callback function previously passed to SignalWithCallback.on.
      */
-    public off(callback: SignalWithResultCallback<ValueType, ResultType>): void {
+    public off(callback: SignalWithResultCallback<ResultType, ValueType>): void {
         const index = this.callbacks.indexOf(callback);
         if (index >= 0) {
             this.callbacks.splice(index, 1);

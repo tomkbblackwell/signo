@@ -68,13 +68,44 @@ Done!
 Async Async!
 Async done!
 ```
+### Signal with result:
+
+```typescript
+import { SignalWithResult } from "signo";
+
+const exampleSignal = new SignalWithResult<string>();
+
+exampleSignal.on(() => {
+    // Undefined results are ignored
+    return undefined;
+});
+
+exampleSignal.on(() => {
+    // The first non-undefined result is used
+    return `Alpha`;
+});
+
+exampleSignal.on(() => {
+    // Subsequent results are ignored
+    return `Beta`;
+});
+
+exampleSignal.send(void, result => {
+    console.log(result);
+});
+```
+
+Expected output:
+```
+Alpha
+```
 
 ### Signal with value and result:
 
 ```typescript
 import { SignalWithResult } from "signo";
 
-const exampleSignal = new SignalWithResult<number, string>();
+const exampleSignal = new SignalWithResult<string, number>();
 
 exampleSignal.on(value => {
     // Undefined results are ignored

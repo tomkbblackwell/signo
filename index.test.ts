@@ -90,7 +90,7 @@ test("async signal w/ Value", async () => {
 });
 
 test("sync signal w/ result", done => {
-    const signal = new SignalWithResult<void, number>();
+    const signal = new SignalWithResult<number>();
 
     signal.on(() => {
         return undefined;
@@ -126,7 +126,7 @@ test("sync signal w/ result", done => {
 });
 
 test("async signal w/ result", async () => {
-    const signal = new SignalWithResult<void, number>();
+    const signal = new SignalWithResult<number>();
 
     signal.on(async () => {
         return undefined;

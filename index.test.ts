@@ -1,4 +1,4 @@
-import { Signal, SignalWithResult } from "./index.js";
+import { Signal, SignalWithResult, signalInstantiated } from "./index.js";
 
 test("Sync Callback", () => {
     const signal = new Signal();
@@ -217,4 +217,16 @@ test("error handling", () => {
     signal.sendSync(undefined, () => {
         expect(called).toBe(false);
     });
+});
+
+test("signalInstantiated hook", () => {
+    let signal2: Signal<any> | SignalWithResult<any, any> | undefined;
+
+    signalInstantiated.on((sig) => {
+        signal2 = sig;
+    });
+
+    const signal = new Signal();
+
+    expect(signal2).toBe(signal);
 });

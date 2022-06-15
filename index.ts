@@ -1,5 +1,6 @@
 export type SignalCallback<ValueType = void> = (signal: ValueType) => void | Promise<void>;
 
+export let signalInstantiated: Signal<Signal<any> | SignalWithResult<any, any>>;
 /**
  * A signal for communicating events and state between seperate parts of an application. Can optionally have a value.
  */
@@ -11,6 +12,8 @@ export class Signal<ValueType = void> {
     /** Define a new signal. */
     public constructor(id?: string | undefined) {
         this.id = id;
+
+        signalInstantiated?.sendAsync(this).catch(console.error);
     }
 
     /**
@@ -85,6 +88,8 @@ export class SignalWithResult<ResultType extends {}, ValueType = void> {
     /** Define a new signalWithValue. */
     public constructor(id?: string | undefined) {
         this.id = id;
+
+        signalInstantiated?.sendAsync(this).catch(console.error);
     }
 
     /**
@@ -154,3 +159,5 @@ export class SignalWithResult<ResultType extends {}, ValueType = void> {
         }
     }
 }
+
+signalInstantiated = new Signal<Signal<any> | SignalWithResult<any, any>>();

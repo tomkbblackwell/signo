@@ -1,19 +1,29 @@
+import MurmurHash3 from "imurmurhash";
+import getCurrentLine from 'get-current-line'
+
+const generateId = () => {
+    const location = getCurrentLine({ frames: 3 });
+    return MurmurHash3(location.file).hash(location.line.toString()).hash(location.char.toString()).result();
+};
+
 export type SignalCallback<ValueType = void> = (signal: ValueType) => void | Promise<void>;
 
 /**
  * A signal for communicating events and state between seperate parts of an application. Can optionally have a value.
  */
 export class Signal<ValueType = void> {
+    /** Unique hash based on the source code location where the signal was constructed. Useful for sending signals between javascript contexts. */
+    public readonly id;
     private callbacks: SignalCallback<ValueType>[] = [];
 
     /** Define a new signal. */
     public constructor() {
-        // Do nothing
+        this.id = generateId();
     }
 
     /**
      * Send a signal, and optionally wait for it's completion via a callback.
-     * @param value Value to send with the signal. If the signal is valueless, this should be void.
+     * @param value Value to send with the signal. If the signal is valueless, this should be undefined.
      * @param callback Optional callback that will be triggered after all subscriptions (sync and async) have been executed.
      */
     public sendSync(value: ValueType, callback?: (() => void) | undefined): void {
@@ -76,16 +86,18 @@ export type SignalWithResultCallback<ResultType extends {}, ValueType = void> = 
  * A signal for communicating events and state between seperate parts of an application. Has a result. Can optionally have a value.
  */
 export class SignalWithResult<ResultType extends {}, ValueType = void> {
+    /** Unique hash based on the source code location where the signal was constructed. Useful for sending signals between javascript contexts. */
+    public readonly id;
     private callbacks: SignalWithResultCallback<ResultType, ValueType>[] = [];
 
     /** Define a new signalWithValue. */
     public constructor() {
-        // Do nothing
+        this.id = generateId();
     }
 
     /**
      * Send a signal, and optionally wait for it's completion and result via a callback.
-     * @param value Value to send with the signal. If the signal is valueless, this should be void.
+     * @param value Value to send with the signal. If the signal is valueless, this should be undefined.
      * @param callback Optional callback that will be triggered after all subscriptions (sync and async) have been executed. The first argument is the signal's result.
      */
     public sendSync(value: ValueType, callback?: ((value: ResultType | undefined) => void) | undefined): void {

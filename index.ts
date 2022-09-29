@@ -24,7 +24,8 @@ export class Signal<ValueType = void> {
     public sendSync(value: ValueType, callback?: (() => void) | undefined): void {
         const promises: Promise<void>[] = [];
 
-        for (const cb of this.callbacks) {
+        const tempCallbacks = [...this.callbacks]; // Prevents bugs if callbacks are added or removed mid-signal
+        for (const cb of tempCallbacks) {
             const result = cb(value);
             if (result && typeof result === "object" && "then" in result) {
                 promises.push(result);
@@ -50,7 +51,8 @@ export class Signal<ValueType = void> {
      * @param value Value to send with the signal. Can be omitted if the signal is valueless.
      */
     public async sendAsync(value: ValueType): Promise<void> {
-        for (const callback of this.callbacks) {
+        const tempCallbacks = [...this.callbacks]; // Prevents bugs if callbacks are added or removed mid-signal
+        for (const callback of tempCallbacks) {
             await callback(value);
         }
     }

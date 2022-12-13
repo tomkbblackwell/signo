@@ -199,6 +199,26 @@ test("async corner cases", async () => {
     expect(result).toBe(42);
 });
 
+test("returnUnsubscribeCallback", () => {
+    const signal = new Signal();
+
+    let called = false;
+
+    var cancel = signal.on(() => {
+        called = true;
+    }, true);
+
+    signal.sendSync();
+    expect(called).toBe(true);
+
+    called = false;
+
+    cancel();
+
+    signal.sendSync();
+    expect(called).toBe(false);
+})
+
 test("error handling", () => {
     const signal = new Signal();
 

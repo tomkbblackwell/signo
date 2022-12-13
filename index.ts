@@ -61,8 +61,21 @@ export class Signal<ValueType = void> {
      * Subscribe to a signal. The callback functions can be either sync or async (by returning a promise).
      * @param callback Callback function, with the signal's value as the first parameter.
      */
-    public on(callback: SignalCallback<ValueType>): void {
+    public on(callback: SignalCallback<ValueType>): void;
+
+    /**
+     * Subscribe to a signal. The callback functions can be either sync or async (by returning a promise).
+     * @param callback Callback function, with the signal's value as the first parameter.
+     * @param returnUnsubscribeCallback Should the function return a callback that can be called to unsubscribe from the signal?
+     */
+    public on(callback: SignalCallback<ValueType>, returnUnsubscribeCallback: true): () => void;
+
+    public on(callback: SignalCallback<ValueType>, returnUnsubscribeCallback = false): void | (() => void) {
         this.callbacks.push(callback);
+
+        if (returnUnsubscribeCallback) {
+            return () => this.off(callback);
+        }
     }
 
     /**

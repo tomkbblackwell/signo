@@ -1,4 +1,4 @@
-import { Signal, SignalWithResult, signalInstantiated } from "./index.js";
+import { Signal, SignalWithResult, signalInstantiated, signalsById } from "./index.js";
 
 test("Sync Callback", () => {
     const signal = new Signal();
@@ -222,21 +222,15 @@ test("returnUnsubscribeCallback", () => {
 test("error handling", () => {
     const signal = new Signal();
 
-    let called = false;
-
     const callback = async () => {
         return new Promise<void>((resolve, reject) => {
             reject("Test error");
-            called = true;
         });
     };
 
-    // Test signal.send without callback
     signal.on(callback);
-    signal.sendAsync();
-    signal.sendSync(undefined, () => {
-        expect(called).toBe(false);
-    });
+    signal.sendSync(); // Test will fail if this throws an exception
+    return signal.sendAsync() // Test will fail if this throws an exception
 });
 
 test("signalInstantiated hook", () => {
@@ -249,4 +243,15 @@ test("signalInstantiated hook", () => {
     const signal = new Signal();
 
     expect(signal2).toBe(signal);
+});
+
+test("signalsById", () => {
+    const testSignal = new Signal("test");
+    const test2Signal = new Signal("test2");
+
+    expect("test" in signalsById).toBeTruthy();
+    expect("test2" in signalsById).toBeTruthy();
+    expect(signalsById["test"]).toBe(testSignal);
+    expect(signalsById["test2"]).toBe(test2Signal);
+    expect("test3" in signalsById).toBeFalsy();
 });

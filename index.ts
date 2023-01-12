@@ -1,5 +1,7 @@
 export type SignalCallback<ValueType = void> = (signal: ValueType) => void | Promise<void>;
 
+export const signalsById: { [key: string]: Signal<any> | SignalWithResult<any, any> } = {};
+
 export let signalInstantiated: Signal<Signal<any> | SignalWithResult<any, any>>;
 /**
  * A signal for communicating events and state between seperate parts of an application. Can optionally have a value.
@@ -12,6 +14,14 @@ export class Signal<ValueType = void> {
     /** Define a new signal. */
     public constructor(id?: string | undefined) {
         this.id = id;
+
+        if (id !== undefined)
+        {
+            if (id in signalsById && signalsById[id]) {
+                throw new Error(`Duplicate signal ID: ${id}`);
+            }
+            signalsById[id] = this;
+        }
 
         signalInstantiated?.sendAsync(this).catch(console.error);
     }
@@ -53,7 +63,11 @@ export class Signal<ValueType = void> {
     public async sendAsync(value: ValueType): Promise<void> {
         const tempCallbacks = [...this.callbacks]; // Prevents bugs if callbacks are added or removed mid-signal
         for (const callback of tempCallbacks) {
-            await callback(value);
+            try {
+                await callback(value);
+            } catch (err) {
+                console.error(err);
+            }
         }
     }
 
